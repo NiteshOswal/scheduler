@@ -1,4 +1,4 @@
-from .app import webapp
+from app import webapp
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000)
+    webapp.run(host="0.0.0.0", port=4000)

@@ -21,10 +21,11 @@ pip install --upgrade pip
 ```
 ## Application level packages
 ```bash
-# install Flask, redis, hiredis, celery, peewee (or ORM)
-pip install Flask celery redis hiredis peewee 
+# install Flask, redis, hiredis, celery
+pip install Flask celery redis hiredis 
 pip install celery[redis]
 pip install arrow # moment.js for python
+sudo apt-get install python-psycopg2
 ```
 
 ## Setup redis config
