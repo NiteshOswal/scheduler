@@ -1,0 +1,4 @@
+enable_utc = True
+timezone = 'Europe/London'
+
+broker_url = "redis://:secret@172.17.0.2:6379/0"
