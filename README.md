@@ -7,11 +7,12 @@ sudo dpkg-reconfigure locales
 
 ## Setup Timezone to UTC
 ```bash
-dpkg-configure tzdata
+dpkg-reconfigure tzdata
 ```
 
 ## Install all the dockerized components
 ```bash
+apt-get install docker.io
 # install necessary docker things
 docker pull postgres
 docker pull redis
@@ -21,11 +22,10 @@ pip install --upgrade pip
 ```
 ## Application level packages
 ```bash
+apt-get install python-dev
 # install Flask, redis, hiredis, celery
-pip install Flask celery redis hiredis 
-pip install celery[redis]
-pip install arrow # moment.js for python
-sudo apt-get install python-psycopg2
+pip install Flask celery redis hiredis requests celery[redis] arrow supervisor eventlet
+apt-get install python-psycopg2
 ```
 
 ## Setup redis config
