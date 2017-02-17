@@ -34,7 +34,7 @@ mkdir -p /etc/redis/
 cd /etc/redis
 wget http://download.redis.io/redis-stable/redis.conf
 ```
-Make the changes as, change the `BIND` address to `0.0.0.0`, `requirepass` to `<password>`
+Make the changes, change the `BIND` address to `0.0.0.0`, `requirepass` to `<password>`
 
 ## Start the docker containers
 ```bash
