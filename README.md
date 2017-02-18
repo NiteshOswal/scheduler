@@ -24,7 +24,8 @@ pip install --upgrade pip
 ```bash
 apt-get install python-dev
 # install Flask, redis, hiredis, celery
-pip install Flask celery redis hiredis requests celery[redis] arrow supervisor eventlet
+pip install Flask celery redis hiredis requests celery[redis] arrow eventlet
+apt-get install supervisor
 apt-get install python-psycopg2
 ```
 
@@ -34,7 +35,7 @@ mkdir -p /etc/redis/
 cd /etc/redis
 wget http://download.redis.io/redis-stable/redis.conf
 ```
-Make the changes, change the `BIND` address to `0.0.0.0`, `requirepass` to `<password>`
+Make the changes, change the `BIND` address to `0.0.0.0`, `requirepass` to `<password>`, `appendonly` => `yes`
 
 ## Start the docker containers
 ```bash

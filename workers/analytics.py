@@ -27,6 +27,8 @@ app.config_from_object(celery_config)
 
 @app.task(name='analytics.issue_token', bind=True)
 def issue_token(self, payload):
+    if type(payload) == list:
+        payload = tuple(payload)
     token_cursor = conn.cursor()
     token_cursor.execute("SELECT token FROM tokens WHERE token = '%s' LIMIT 1" % (payload[0]))
     token = token_cursor.fetchone()
