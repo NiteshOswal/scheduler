@@ -8,6 +8,7 @@ import psycopg2
 import psycopg2.extras
 import arrow
 import math
+from flask_cors import CORS, cross_origin
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__))) #add this path so the module dependencies work nicely..
 # from workers import instance
@@ -24,6 +25,7 @@ conn = psycopg2.connect(
 )
 
 webapp = flask.Flask(__name__)
+CORS(webapp)
 
 def get_ip(obj):
     print obj
@@ -74,7 +76,11 @@ def issue_token():
 
 @webapp.route('/analytics', methods=['POST'])
 def analytics_pool():
-    signature = analytics_worker.pool.signature((flask.request.args['token'], flask.request.get_json()), countdown=10)
+    if not flask.request.data:
+        return flask.jsonify(0)
+    data = json.loads(flask.request.data)
+    print data
+    signature = analytics_worker.pool.signature((flask.request.args['token'], data), countdown=10)
     signature.delay()
     return flask.jsonify(1)
 

@@ -45,7 +45,7 @@ def pool(self, token, event):
         INSERT INTO analytics_dump (token, data) VALUES ('%s', '%s')
     """ % (
         token,
-        json.dumps(event)
+        json.dumps(event).replace("'", "''")
     ))
     conn.commit()
     cursor.close()

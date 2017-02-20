@@ -24,7 +24,7 @@ pip install --upgrade pip
 ```bash
 apt-get install python-dev
 # install Flask, redis, hiredis, celery
-pip install Flask celery redis hiredis requests celery[redis] arrow eventlet
+pip install Flask celery redis hiredis requests celery[redis] arrow eventlet flask-cors
 apt-get install supervisor
 apt-get install python-psycopg2
 ```
