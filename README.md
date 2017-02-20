@@ -45,3 +45,14 @@ docker run --name postgres-instance -v /postgres-data:/var/lib/postgresql/data -
 ## Copy config files
 copy all default files into their main config file..
 
+## Running the workers
+```bash
+celery -A analytics worker -P eventlet -c 1000
+celery -A social worker -P eventlet -c 1000
+```
+
+## or by using the supervisord config
+```bash
+supervisord -c "supervisord.conf"
+```
+
