@@ -37,6 +37,18 @@ def issue_token(self, payload):
     token_cursor.close()
     conn.commit() # commit to the db
 
+@app.task(name='analytics.identify', bind=True)
+def identify(self, token, identify):
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE tokens SET profile = '%s' WHERE token = '%s'
+    """ % (
+        json.dumps(identify).replace("'", "''"),
+        token
+    ))
+    conn.commit()
+    cursor.close()
+
 # define tasks
 @app.task(name='analytics.pool', bind=True)
 def pool(self, token, event):

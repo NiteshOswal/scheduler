@@ -24,6 +24,7 @@ cursor.execute("""
         user_agent TEXT,
         ip INET, 
         extra JSON,
+        profile JSON,
         created_at TIMESTAMP DEFAULT NOW()
     )
 """)

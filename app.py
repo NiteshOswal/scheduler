@@ -73,14 +73,21 @@ def issue_token():
         "u": token
     })
 
+@webapp.route('/identify', methods=['POST'])
+def identify():
+    if not flask.request.data:
+        return flask.jsonify(0)
+    data = json.loads(flask.request.data)
+    signature = analytics_worker.identify.signature((flask.request.args['token'], data), countdown=5)
+    signature.delay()
+    return flask.jsonify(1)
 
 @webapp.route('/analytics', methods=['POST'])
 def analytics_pool():
     if not flask.request.data:
         return flask.jsonify(0)
     data = json.loads(flask.request.data)
-    print data
-    signature = analytics_worker.pool.signature((flask.request.args['token'], data), countdown=10)
+    signature = analytics_worker.pool.signature((flask.request.args['token'], data), countdown=5)
     signature.delay()
     return flask.jsonify(1)
 
