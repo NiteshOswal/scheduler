@@ -27,38 +27,53 @@ app.config_from_object(celery_config)
 
 @app.task(name='analytics.issue_token', bind=True)
 def issue_token(self, payload):
-    if type(payload) == list:
-        payload = tuple(payload)
-    token_cursor = conn.cursor()
-    token_cursor.execute("SELECT token FROM tokens WHERE token = '%s' LIMIT 1" % (payload[0]))
-    token = token_cursor.fetchone()
-    if not token:
-        token_cursor.execute("INSERT INTO tokens (token, origin, user_agent, ip, extra) VALUES ('%s', '%s', '%s', '%s', '%s')" % payload)
-    token_cursor.close()
-    conn.commit() # commit to the db
+    try:
+        if type(payload) == list:
+            payload = tuple(payload)
+        token_cursor = conn.cursor()
+        token_cursor.execute("SELECT token FROM tokens WHERE token = '%s' LIMIT 1" % (payload[0]))
+        token = token_cursor.fetchone()
+        if not token:
+            token_cursor.execute("INSERT INTO tokens (token, origin, user_agent, ip, extra) VALUES ('%s', '%s', '%s', '%s', '%s')" % payload)
+        token_cursor.close()
+        conn.commit() # commit to the db
+    except psycopg2.ProgrammingError, e:
+        self.retry(exc=e, countdown=1)
+    except Exception, e:
+        self.retry(exc=e, countdown=1)
 
 @app.task(name='analytics.identify', bind=True)
 def identify(self, token, identify):
-    cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE tokens SET profile = '%s' WHERE token = '%s'
-    """ % (
-        json.dumps(identify).replace("'", "''"),
-        token
-    ))
-    conn.commit()
-    cursor.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE tokens SET profile = '%s' WHERE token = '%s'
+        """ % (
+            json.dumps(identify).replace("'", "''"),
+            token
+        ))
+        conn.commit()
+        cursor.close()
+    except psycopg2.ProgrammingError, e:
+        self.retry(exc=e, countdown=1)
+    except Exception, e:
+        self.retry(exc=e, countdown=1)
 
 # define tasks
 @app.task(name='analytics.pool', bind=True)
 def pool(self, token, event):
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO analytics_dump (token, data) VALUES ('%s', '%s')
-    """ % (
-        token,
-        json.dumps(event).replace("'", "''")
-    ))
-    conn.commit()
-    cursor.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO analytics_dump (token, data) VALUES ('%s', '%s')
+        """ % (
+            token,
+            json.dumps(event).replace("'", "''")
+        ))
+        conn.commit()
+        cursor.close()
+    except psycopg2.ProgrammingError, e:
+        self.retry(exc=e, countdown=1)
+    except Exception, e:
+        self.retry(exc=e, countdown=1)
     return True
