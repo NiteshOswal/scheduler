@@ -9,14 +9,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import postgres
 
-conn = psycopg2.connect(
-    dbname=postgres.database,
-    user=postgres.username,
-    password=postgres.password,
-    host=postgres.host,
-    port=postgres.port
-)
-
 # we need config in our path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import celery as celery_config
@@ -27,6 +19,13 @@ app.config_from_object(celery_config)
 
 @app.task(name='analytics.issue_token', bind=True)
 def issue_token(self, payload):
+    conn = psycopg2.connect(
+        dbname=postgres.database,
+        user=postgres.username,
+        password=postgres.password,
+        host=postgres.host,
+        port=postgres.port
+    )
     try:
         if type(payload) == list:
             payload = tuple(payload)
@@ -41,9 +40,17 @@ def issue_token(self, payload):
         self.retry(exc=e, countdown=1)
     except Exception, e:
         self.retry(exc=e, countdown=1)
+    conn.close();
 
 @app.task(name='analytics.identify', bind=True)
 def identify(self, token, identify):
+    conn = psycopg2.connect(
+        dbname=postgres.database,
+        user=postgres.username,
+        password=postgres.password,
+        host=postgres.host,
+        port=postgres.port
+    )
     try:
         cursor = conn.cursor()
         cursor.execute("""
@@ -58,10 +65,18 @@ def identify(self, token, identify):
         self.retry(exc=e, countdown=1)
     except Exception, e:
         self.retry(exc=e, countdown=1)
+    conn.close()
 
 # define tasks
 @app.task(name='analytics.pool', bind=True)
 def pool(self, token, event):
+    conn = psycopg2.connect(
+        dbname=postgres.database,
+        user=postgres.username,
+        password=postgres.password,
+        host=postgres.host,
+        port=postgres.port
+    )
     try:
         cursor = conn.cursor()
         cursor.execute("""
@@ -76,4 +91,5 @@ def pool(self, token, event):
         self.retry(exc=e, countdown=1)
     except Exception, e:
         self.retry(exc=e, countdown=1)
+    conn.close()
     return True
